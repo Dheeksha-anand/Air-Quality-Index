@@ -1,4 +1,4 @@
-🌟 Air Quality Prediction Application
+##🌟 Air Quality Prediction Application
 
 Welcome to the Air Quality Prediction Application, a user-friendly tool that leverages machine learning to predict air quality categories based on AQI (Air Quality Index) values of major pollutants such as CO, Ozone, NO2, and PM2.5.
 
