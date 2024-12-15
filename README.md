@@ -70,6 +70,44 @@ Predict Button: Get an instant AQI category prediction.
 Responsive Design: Works across different screen sizes.
 
 
+
+## ✨ **Workflow**
+Data Preprocessing
+
+Input features are scaled using StandardScaler.
+Labels are encoded using LabelEncoder.
+Model Training
+
+The Random Forest Classifier is used for training the model.
+Data is split into training and testing sets (80/20).
+Model Saving
+
+The trained model is saved as a .pkl file using pickle.
+Deployment
+
+Web UI is built using Streamlit to take user AQI inputs.
+The trained model is loaded to predict and display the AQI category.
+
+## 🚀 **Execution**
+Train the Model
+Run the model training script:
+
+    python train_model.py
+This script:<br>
+Loads and preprocesses the data.<br>
+Trains the Random Forest model.<br>
+Saves the model as air_quality_model.pkl.
+
+Start the Streamlit Web App
+
+    streamlit run app.py
+    
+Interact with the Web App
+
+The Streamlit interface allows you to input CO, Ozone, NO2, PM2.5 values.
+Click on "Predict AQI Category" to see the prediction result.
+
+
 ## 🚧 **Future Enhancements**
 
 ✅ Add real-time AQI updates via APIs.<br>
