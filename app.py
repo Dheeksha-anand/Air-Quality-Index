@@ -175,8 +175,8 @@ else:
         st.markdown(
             """
             <p class="description">
-            
-            Breathe Better, Live Smarter! 🌿
+            "
+            Breathe Better, Live Smarter!" 🌿
             </p>
             <p class="description">
             Welcome to Air Quality Prediction, your smart AI-powered companion for monitoring and understanding air quality. By analyzing AQI factors like CO, Ozone, NO₂, and PM2.5, we deliver instant  reports.
