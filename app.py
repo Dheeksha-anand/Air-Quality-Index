@@ -175,7 +175,7 @@ else:
         st.markdown(
             """
             <p class="description">
-            "
+            
             "Breathe Better, Live Smarter!" 🌿
             </p>
             <p class="description">
