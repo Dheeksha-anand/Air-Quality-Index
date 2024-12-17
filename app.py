@@ -171,11 +171,11 @@ else:
         """, unsafe_allow_html=True)
 
     elif page == "About":
-        st.markdown('<p class="title">About</p>', unsafe_allow_html=True)
+        st.markdown('<p class="title"><h2>About</h2></p>', unsafe_allow_html=True)
         st.markdown(
             """
             <p class="description">
-            "
+            
             Breathe Better, Live Smarter! 🌿
             </p>
             <p class="description">
