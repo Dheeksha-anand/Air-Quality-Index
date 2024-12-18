@@ -85,6 +85,12 @@ st.markdown(
         background-color: #1d2b64;
         color: white;
     }
+    .center-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -94,15 +100,31 @@ st.markdown(
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
+# Login validation functions
+def is_valid_username(username):
+    # Check that username is not empty and does not contain numbers
+    if not username:
+        return False
+    return not any(char.isdigit() for char in username)
+
 if not st.session_state.authenticated:
     st.markdown('<p class="title">Login</p>', unsafe_allow_html=True)
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
+    
+    # Login logic with username and password validation
     if st.button("Login"):
-        st.session_state.authenticated = True
-        st.session_state.username = username
-        log_activity(username, "Logged in")
-        st.success(f"Successfully logged in as {username}!")
+        if is_valid_username(username) and password:
+            st.session_state.authenticated = True
+            st.session_state.username = username
+            log_activity(username, "Logged in")
+            st.success(f"Successfully logged in as {username}!")
+            st.rerun()  # Rerun to show the main app page
+        else:
+            if not is_valid_username(username):
+                st.error("Username must not contain numbers.")
+            elif not password:
+                st.error("Please enter a password.")
 else:
     # Sidebar Navigation
     page = st.sidebar.radio("Navigate", ["Home", "Visualize Air Quality", "About", "Logout"])
@@ -111,7 +133,7 @@ else:
         st.markdown('<p class="title">Air Quality Prediction</p>', unsafe_allow_html=True)
         st.markdown('<p class="description">Enter AQI values to predict the air quality category.</p>', unsafe_allow_html=True)
 
-        #st.markdown('<div class="input-section">', unsafe_allow_html=True)
+        st.markdown('<div class="input-section">', unsafe_allow_html=True)
         co_value = st.number_input('CO AQI Value:', min_value=0, value=50, step=1, format="%d")
         ozone_value = st.number_input('Ozone AQI Value:', min_value=0, value=30, step=1, format="%d")
         no2_value = st.number_input('NO2 AQI Value:', min_value=0, value=20, step=1, format="%d")
@@ -135,59 +157,86 @@ else:
 
     elif page == "Visualize Air Quality":
         st.markdown('<p class="title">Visualize Air Quality</p>', unsafe_allow_html=True)
-        
-        # Input data to generate visualization details
         co_value = st.number_input('CO AQI Value:', min_value=0, value=50, step=1, format="%d")
         ozone_value = st.number_input('Ozone AQI Value:', min_value=0, value=30, step=1, format="%d")
         no2_value = st.number_input('NO2 AQI Value:', min_value=0, value=20, step=1, format="%d")
         pm25_value = st.number_input('PM2.5 AQI Value:', min_value=0, value=10, step=1, format="%d")
 
-        # Basic descriptions to show good vs bad air quality
-        good_air = "The air quality is considered <b>Good</b> when AQI values are low and have minimal health impact. <br>"
-        bad_air = "The air quality becomes <b>Hazardous</b> when AQI values reach higher levels, and it may trigger significant health problems.<br>"
-        
-        st.markdown(f'<p class="description">{good_air}</p>', unsafe_allow_html=True)
-        st.markdown(f'<p class="description">{bad_air}</p>', unsafe_allow_html=True)
-
-        # Calculate general air quality threshold from user input
+        # Additional data table columns
         data = {
             "AQI Parameter": ["CO", "Ozone", "NO2", "PM2.5"],
             "Input Value": [co_value, ozone_value, no2_value, pm25_value],
-            "Good Threshold": [50, 50, 50, 50],  # You can adjust these threshold values based on your model or actual guidelines
-            "Moderate Threshold": [100, 100, 100, 100],
-            "Unhealthy Threshold": [150, 150, 150, 150]
+            "Good Range": ["0-50", "0-54", "0-53", "0-12"],
+            "Moderate Range": ["51-100", "55-70", "54-100", "13-35"],
+            "Unhealthy Range": ["101-150", "71-85", "101-360", "36-55"],
+            "Very Unhealthy Range": [">150", ">85", ">360", ">55"]
         }
         df = pd.DataFrame(data)
-        st.write(df)
-        
-        fig, ax = plt.subplots(figsize=(8, 5))
 
-        # Plot for AQI categories
-        ax.pie(df["Input Value"], labels=df["AQI Parameter"], autopct='%1.1f%%', colors=['#4CAF50', '#FFEB3B', '#FF5722', '#FF0000'])
+        # Display the data table
+        st.markdown('<p class="description">AQI Parameter Ranges</p>', unsafe_allow_html=True)
+        st.dataframe(df, use_container_width=True)
+
+        # Pie chart visualization
+        fig, ax = plt.subplots(figsize=(8, 5))
+        fig.patch.set_facecolor("#121212")
+        ax.set_facecolor("#121212")
+        wedges, texts, autotexts = ax.pie(
+            df["Input Value"], 
+            labels=df["AQI Parameter"], 
+            autopct='%1.1f%%', 
+            colors=['#4CAF50', '#FFEB3B', '#FF5722', '#FF0000']
+        )
+        
+        # Set label and percentage text colors to white
+        plt.setp(texts, color='white')
+        plt.setp(autotexts, color='white')
+        
+        plt.title("AQI Distribution", color="white")
         st.pyplot(fig)
 
-        st.markdown("""
+    elif page == "About":
+        st.markdown('<p class="title">About Air Quality Prediction</p>', unsafe_allow_html=True)
         
+        # Attractive About section with quote and description
+        st.markdown("""
+        <div style="background-color: rgba(0, 0, 0, 0.6); padding: 30px; border-radius: 15px; margin: 20px 0;">
+        <blockquote style="font-style: italic; font-size: 24px; color: #ff6f61; text-align: center; margin-bottom: 20px;">
+        "The air we breathe is the very essence of life. Understanding it is our first step towards protecting it."
+        </blockquote>
+        
+        <p style="color: white; font-size: 18px; line-height: 1.6; text-align: justify;">
+        Our Air Quality Prediction app is more than just a tool—it's a mission to empower individuals with critical environmental insights. 
+        In an era of increasing environmental challenges, knowledge is our most powerful weapon in the fight for cleaner, healthier air.
+        </p>
+        
+        <h2 style="color: #4CAF50; text-align: center; margin-top: 20px;">Our Vision</h2>
+        
+        <p style="color: white; font-size: 16px; line-height: 1.6; text-align: justify;">
+        We believe that by providing real-time, accurate air quality information, we can:
+        • Raise awareness about environmental health
+        • Help individuals make informed decisions
+        • Contribute to a global movement of environmental consciousness
+        </p>
+        
+        <div style="text-align: center; margin-top: 20px;">
+        <img src="/api/placeholder/400/200" alt="Environmental Awareness" style="max-width: 100%; border-radius: 10px;">
+        </div>
+        
+        <p style="color: #FFEB3B; text-align: center; margin-top: 20px; font-size: 16px;">
+        Together, we can breathe easier. Together, we can make a difference.
+        </p>
+        </div>
         """, unsafe_allow_html=True)
 
-    elif page == "About":
-        st.markdown('<p class="title">About</p>', unsafe_allow_html=True)
-        st.markdown(
-            """
-            <p class="description">
-            "
-            Breathe Better, Live Smarter!" 🌿
-            </p>
-            <p class="description">
-            Welcome to Air Quality Prediction, your smart AI-powered companion for monitoring and understanding air quality. By analyzing AQI factors like CO, Ozone, NO₂, and PM2.5, we deliver instant  reports.
-
-Stay aware, stay healthy—because every breath shapes your life. Breathe smart, live brighter! 
-            </p>
-            """,
-            unsafe_allow_html=True
-        )
-
     elif page == "Logout":
-        log_activity(st.session_state.username, "Logged out")
-        st.session_state.authenticated = False
-        st.success("You have been logged out.")
+        st.markdown('<p class="title">Logout</p>', unsafe_allow_html=True)
+        
+        # Create a centered container for the logout button
+        col1, col2, col3 = st.columns([3, 2, 3])
+        
+        with col2:
+            if st.button("Confirm Logout", key="logout_button"):
+                log_activity(st.session_state.username, "Logged out")
+                st.session_state.authenticated = False
+                st.success("You have been logged out. Refresh the page to log back in.")
