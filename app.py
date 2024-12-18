@@ -111,7 +111,7 @@ else:
         st.markdown('<p class="title">Air Quality Prediction</p>', unsafe_allow_html=True)
         st.markdown('<p class="description">Enter AQI values to predict the air quality category.</p>', unsafe_allow_html=True)
 
-        st.markdown('<div class="input-section">', unsafe_allow_html=True)
+        #st.markdown('<div class="input-section">', unsafe_allow_html=True)
         co_value = st.number_input('CO AQI Value:', min_value=0, value=50, step=1, format="%d")
         ozone_value = st.number_input('Ozone AQI Value:', min_value=0, value=30, step=1, format="%d")
         no2_value = st.number_input('NO2 AQI Value:', min_value=0, value=20, step=1, format="%d")
